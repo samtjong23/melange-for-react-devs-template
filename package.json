@@ -13,7 +13,8 @@
     "format:check": "npm run dune -- build @fmt",
     "watch": "npm run build -- --watch",
     "serve": "vite serve --open",
-    "bundle": "npm run build && vite build"
+    "bundle": "npm run build && vite build",
+    "test": "npm run build && node _build/default/src/order-confirmation/output/src/order-confirmation/SandwichTests.mjs"
   },
   "scriptsComments": {
     "preinstall:opam": "# Sync opam database with upstream repositories: https://opam.ocaml.org/doc/Usage.html#opam-update",
