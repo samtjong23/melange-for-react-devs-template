@@ -19,4 +19,5 @@
  (preprocess
   (pps melange.ppx reason-react-ppx))
  ; module_systems lets you specify commonjs (the default) or es6
- (module_systems es6))
+ (module_systems es6)
+ (runtime_deps order-item.module.css order.module.css))
