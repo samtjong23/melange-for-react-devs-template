@@ -1,7 +1,9 @@
 module App = {
   [@react.component]
-  let make = () => <h1> {React.string("Welcome to my app!")} </h1>;
+  let make = () =>
+    <div> <h1> {React.string("Counter")} </h1> <Counter /> </div>;
 };
+
 let node = ReactDOM.querySelector("#root");
 switch (node) {
 | None =>
