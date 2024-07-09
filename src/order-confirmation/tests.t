@@ -53,3 +53,47 @@ Burger tests
   # cancelled 0
   # skipped 0
   # todo 0
+
+Discount tests
+  $ node ./output/src/order-confirmation/DiscountTests.mjs | sed '/duration_ms/d'
+  TAP version 13
+  # Subtest: 0 burgers, no discount
+  ok 1 - 0 burgers, no discount
+    ---
+    ...
+  # Subtest: 1 burger, no discount
+  ok 2 - 1 burger, no discount
+    ---
+    ...
+  # Subtest: 2 burgers of same price, discount
+  ok 3 - 2 burgers of same price, discount
+    ---
+    ...
+  # Subtest: 2 burgers of different price, discount of cheaper one
+  ok 4 - 2 burgers of different price, discount of cheaper one
+    ---
+    ...
+  # Subtest: Input array isn't changed
+  ok 5 - Input array isn't changed
+    ---
+    ...
+  # Subtest: 3 burgers of different price, return Some(15.15)
+  ok 6 - 3 burgers of different price, return Some(15.15)
+    ---
+    ...
+  # Subtest: No burger has 1+ of every topping, return None
+  ok 7 - No burger has 1+ of every topping, return None
+    ---
+    ...
+  # Subtest: One burger has 1+ of every topping, return Some
+  ok 8 - One burger has 1+ of every topping, return Some
+    ---
+    ...
+  1..8
+  # tests 8
+  # suites 0
+  # pass 8
+  # fail 0
+  # cancelled 0
+  # skipped 0
+  # todo 0
