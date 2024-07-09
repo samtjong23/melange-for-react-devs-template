@@ -49,7 +49,6 @@ module Burger = {
   };
 
   let toEmoji = ({lettuce, tomatoes, onions, cheese, bacon}) => {
-    let hasToppings = () => lettuce || tomatoes || onions + cheese + bacon > 0;
     let multiple: (string, int) => string =
       emoji =>
         fun
@@ -57,10 +56,14 @@ module Burger = {
         | 1 => emoji
         | count => Printf.sprintf({js|%s×%d|js}, emoji, count);
 
-    !hasToppings()
+    let toppingsCount =
+      (lettuce ? 1 : 0) + (tomatoes ? 1 : 0) + onions + cheese + bacon;
+
+    toppingsCount == 0
       ? {js|🍔|js}
       : Printf.sprintf(
-          {js|🍔{%s}|js},
+          {js|🍔%s{%s}|js},
+          toppingsCount > 12 ? {js|🥣|js} : "",
           [|
             lettuce ? {js|🥬|js} : "",
             tomatoes ? {js|🍅|js} : "",

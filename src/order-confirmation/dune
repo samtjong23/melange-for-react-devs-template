@@ -21,3 +21,7 @@
  ; module_systems lets you specify commonjs (the default) or es6
  (module_systems (es6 mjs))
  (runtime_deps order-item.module.css order.module.css))
+
+(cram
+ (deps
+  (alias melange)))

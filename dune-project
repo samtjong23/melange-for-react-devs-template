@@ -7,3 +7,7 @@
 ; Set the name which is used by error messages
 
 (name melange-for-react-devs)
+
+; Copy all build targets for an alias into the sandbox
+
+(expand_aliases_in_sandbox)
