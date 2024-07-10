@@ -10,49 +10,53 @@ let burger: Item.Burger.t = {
 
 test("0 burgers, no discount", () =>
   expect
-  |> equal(
-       Discount.getFreeBurger([Hotdog, Sandwich(Ham), Sandwich(Turducken)]),
-       None,
+  |> deepEqual(
+       Discount.getFreeBurgers([
+         Hotdog,
+         Sandwich(Ham),
+         Sandwich(Turducken),
+       ]),
+       Error(`NeedTwoBurgers),
      )
 );
 
 test("1 burger, no discount", () =>
   expect
-  |> equal(
+  |> deepEqual(
        Discount.getFreeBurger([Hotdog, Sandwich(Ham), Burger(burger)]),
-       None,
+       Error(`NeedOneBurger),
      )
 );
 
 test("2 burgers of same price, discount", () =>
   expect
-  |> equal(
+  |> deepEqual(
        Discount.getFreeBurger([
          Hotdog,
          Burger(burger),
          Sandwich(Ham),
          Burger(burger),
        ]),
-       Some(15.),
+       Ok(15.),
      )
 );
 
 test("2 burgers of different price, discount of cheaper one", () =>
   expect
-  |> equal(
+  |> deepEqual(
        Discount.getFreeBurger([
          Hotdog,
          Burger({...burger, tomatoes: true}), // 15.05
          Sandwich(Ham),
          Burger({...burger, bacon: 2}) // 16.00
        ]),
-       Some(15.05),
+       Ok(15.05),
      )
 );
 
 test("3 burgers of different price, return Some(15.15)", () =>
   expect
-  |> equal(
+  |> deepEqual(
        Discount.getFreeBurger([
          Burger(burger), // 15
          Hotdog,
@@ -60,13 +64,13 @@ test("3 burgers of different price, return Some(15.15)", () =>
          Sandwich(Ham),
          Burger({...burger, bacon: 2}) // 16.00
        ]),
-       Some(15.15),
+       Ok(15.15),
      )
 );
 
 test("7 burgers, return Some(46.75)", () =>
   expect
-  |> equal(
+  |> deepEqual(
        Discount.getFreeBurgers([
          Burger(burger), // 15
          Hotdog,
@@ -80,14 +84,14 @@ test("7 burgers, return Some(46.75)", () =>
          Sandwich(Portabello),
          Burger({...burger, tomatoes: true}) // 15.05
        ]),
-       Some(46.75),
+       Ok(46.75),
      )
 );
 
 module HalfOff = {
   test("No burger has 1+ of every topping, return None", () =>
     expect
-    |> equal(
+    |> deepEqual(
          Discount.getHalfOff([
            Hotdog,
            Sandwich(Portabello),
@@ -99,7 +103,7 @@ module HalfOff = {
              bacon: 0,
            }),
          ]),
-         None,
+         Error(`NeedMegaBurger),
        )
   );
 
@@ -110,7 +114,7 @@ module HalfOff = {
       Burger({lettuce: true, tomatoes: true, cheese: 1, onions: 1, bacon: 2}),
     ];
     expect
-    |> equal(
+    |> deepEqual(
          Discount.getHalfOff(items),
          {
            let sum =
@@ -118,8 +122,115 @@ module HalfOff = {
              |> ListLabels.fold_left(~init=0.0, ~f=(total, item) =>
                   total +. Item.toPrice(item)
                 );
-           Some(sum /. 2.0);
+           Ok(sum /. 2.0);
+         },
+       );
+  });
+
+  test(
+    "HALF promo code returns getHalfOff on May 28 but not other days of May",
+    () => {
+    for (dayOfMonth in 1 to 31) {
+      let date =
+        Js.Date.makeWithYMD(
+          ~year=2024.,
+          ~month=4.0,
+          ~date=float_of_int(dayOfMonth),
+        );
+
+      expect
+      |> deepEqual(
+           Discount.getDiscountFunction("HALF", date),
+           dayOfMonth == 28 ? Ok(Discount.getHalfOff) : Error(ExpiredCode),
+         );
+    }
+  });
+};
+
+module GetDiscount = {
+  test("Invalid promo code return Error", () => {
+    let date = Js.Date.make();
+    ["", "FREEDOM", "UNICORN", "POO"]
+    |> List.iter(code =>
+         expect
+         |> deepEqual(
+              Discount.getDiscountFunction(code, date),
+              Error(InvalidCode),
+            )
+       );
+  });
+
+  test("FREE promo code works in May but not other months", () => {
+    List.init(12, i => i)
+    |> List.iter(month => {
+         let date =
+           Js.Date.makeWithYMD(
+             ~year=2024.,
+             ~month=float_of_int(month),
+             ~date=10.,
+           );
+
+         expect
+         |> deepEqual(
+              Discount.getDiscountFunction("FREE", date),
+              month == 4 ? Ok(Discount.getFreeBurgers) : Error(ExpiredCode),
+            );
+       })
+  });
+};
+
+module SandwichHalfOff = {
+  test("Not all sandwiches, return Error", () =>
+    expect
+    |> deepEqual(
+         Discount.getSandwichHalfOff([
+           Sandwich(Unicorn),
+           Hotdog,
+           Sandwich(Portabello),
+           Sandwich(Ham),
+         ]),
+         Error(`MissingSandwichTypes),
+       )
+  );
+
+  test("All sandwiches, return Ok", () => {
+    let items = [
+      Item.Sandwich(Turducken),
+      Hotdog,
+      Sandwich(Portabello),
+      Burger({lettuce: true, tomatoes: true, cheese: 1, onions: 1, bacon: 2}),
+      Sandwich(Unicorn),
+      Sandwich(Ham),
+    ];
+    expect
+    |> deepEqual(
+         Discount.getSandwichHalfOff(items),
+         {
+           // Don't use hardcoded value since Item.toPrice is non-deterministic
+           let sum =
+             items |> List.map(Item.toPrice) |> List.fold_left((+.), 0.0);
+           Ok(sum /. 2.0);
          },
        );
   });
 };
+
+test(
+  "HALF promo code returns getSandwichHalfOff on Nov 3 but not other days of Nov",
+  () => {
+  for (dayOfMonth in 1 to 30) {
+    let date =
+      Js.Date.makeWithYMD(
+        ~year=2024.,
+        ~month=10.0,
+        ~date=float_of_int(dayOfMonth),
+      );
+
+    expect
+    |> deepEqual(
+         Discount.getDiscountFunction("HALF", date),
+         dayOfMonth == 3
+           ? Ok(Discount.getSandwichHalfOff) : Error(ExpiredCode),
+       );
+  }
+});
