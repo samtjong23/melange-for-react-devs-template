@@ -1,39 +1,54 @@
-// Buy 2 burgers, get 1 free
-let getFreeBurger = (items: array(Item.t)) => {
-  let prices =
-    items
-    |> Js.Array.filter(
-         ~f=
-           fun
-           | Item.Burger(_) => true
-           | Sandwich(_)
-           | Hotdog => false,
-       )
-    |> Js.Array.map(~f=Item.toPrice)
-    |> Js.Array.sortInPlaceWith(~f=(x, y) => - compare(x, y));
-
-  prices[1];
+/** Buy 2 burgers, get 1 free */
+let getFreeBurger = (items: list(Item.t)) => {
+  items
+  |> List.filter_map(item =>
+       switch (item) {
+       | Item.Burger(burger) => Some(Item.Burger.toPrice(burger))
+       | Sandwich(_)
+       | Hotdog => None
+       }
+     )
+  |> List.sort((x, y) => - Float.compare(x, y))
+  |> ListSafe.nth(1);
 };
 
-// Buy 1+ burger with 1+ of every topping, get half off
-let getHalfOff = (items: array(Item.t)) => {
+/** Buy n burgers, get n/2 burgers free */
+let getFreeBurgers = (items: list(Item.t)) => {
+  let prices =
+    items
+    |> List.filter_map(item =>
+         switch (item) {
+         | Item.Burger(burger) => Some(Item.Burger.toPrice(burger))
+         | Sandwich(_)
+         | Hotdog => None
+         }
+       );
+
+  switch (prices) {
+  | []
+  | [_] => None
+  | prices =>
+    let result =
+      prices
+      |> List.sort((x, y) => - Float.compare(x, y))
+      |> List.filteri((index, _) => index mod 2 == 1)
+      |> List.fold_left((+.), 0.0);
+    Some(result);
+  };
+};
+
+/** Buy 1+ burger with 1+ of every topping, get half off */
+let getHalfOff = (items: list(Item.t)) => {
   let meetsCondition =
     items
-    |> Js.Array.some(
-         ~f=
-           fun
-           | Item.Burger({
-               lettuce: true,
-               tomatoes: true,
-               onions,
-               cheese,
-               bacon,
-             })
-               when onions > 0 && cheese > 0 && bacon > 0 =>
-             true
-           | Burger(_)
-           | Sandwich(_)
-           | Hotdog => false,
+    |> List.exists(
+         fun
+         | Item.Burger({lettuce: true, tomatoes: true, onions, cheese, bacon})
+             when onions > 0 && cheese > 0 && bacon > 0 =>
+           true
+         | Burger(_)
+         | Sandwich(_)
+         | Hotdog => false,
        );
 
   switch (meetsCondition) {
@@ -41,7 +56,7 @@ let getHalfOff = (items: array(Item.t)) => {
   | true =>
     let total =
       items
-      |> Js.Array.reduce(~init=0.0, ~f=(total, item) =>
+      |> ListLabels.fold_left(~init=0.0, ~f=(total, item) =>
            total +. Item.toPrice(item)
          );
     Some(total /. 2.0);

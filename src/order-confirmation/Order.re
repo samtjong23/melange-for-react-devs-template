@@ -1,4 +1,4 @@
-type t = array(Item.t);
+type t = list(Item.t);
 
 module OrderItem = {
   [@mel.module "./order-item.module.css"]
@@ -18,16 +18,17 @@ module OrderItem = {
 let make = (~items: t) => {
   let total =
     items
-    |> Js.Array.reduce(~init=0., ~f=(acc, order) =>
+    |> ListLabels.fold_left(~init=0., ~f=(acc, order) =>
          acc +. Item.toPrice(order)
        );
 
   <table className=css##order>
     <tbody>
       {items
-       |> Js.Array.mapi(~f=(item, index) =>
+       |> List.mapi((index, item) =>
             <OrderItem key={"item-" ++ string_of_int(index)} item />
           )
+       |> Stdlib.Array.of_list
        |> React.array}
       <tr className=css##total>
         <td> {React.string("Total")} </td>
