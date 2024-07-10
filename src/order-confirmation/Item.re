@@ -38,14 +38,14 @@ module Burger = {
     bacon: int,
   };
 
-  let toPrice = ({onions, cheese, bacon, tomatoes, lettuce: _}) => {
+  let toPrice = ({onions, cheese, tomatoes, bacon, lettuce: _}) => {
     let toppingCost = (quantity, cost) => float_of_int(quantity) *. cost;
 
-    15.
+    15.  // base cost
     +. toppingCost(onions, 0.2)
     +. toppingCost(cheese, 0.1)
-    +. toppingCost(bacon, 0.5)
-    +. (tomatoes ? 0.05 : 0.);
+    +. (tomatoes ? 0.05 : 0.0)
+    +. toppingCost(bacon, 0.5);
   };
 
   let toEmoji = ({lettuce, tomatoes, onions, cheese, bacon}) => {
@@ -82,10 +82,10 @@ type t =
   | Burger(Burger.t)
   | Hotdog;
 
-let toPrice = t => {
+let toPrice = (t, ~date: Js.Date.t) => {
   switch (t) {
   | Hotdog => 5.
-  | Sandwich(sandwich) => Sandwich.toPrice(sandwich, ~date=Js.Date.make())
+  | Sandwich(sandwich) => Sandwich.toPrice(sandwich, ~date)
   | Burger(burger) => Burger.toPrice(burger)
   };
 };

@@ -44,7 +44,7 @@ let getFreeBurgers = (items: list(Item.t)) => {
 };
 
 /** Buy 1+ burger with 1+ of every topping, get half off */
-let getHalfOff = (items: list(Item.t)) => {
+let getHalfOff = (items: list(Item.t), ~date: Js.Date.t) => {
   let meetsCondition =
     items
     |> List.exists(
@@ -63,7 +63,7 @@ let getHalfOff = (items: list(Item.t)) => {
     let total =
       items
       |> ListLabels.fold_left(~init=0.0, ~f=(total, item) =>
-           total +. Item.toPrice(item)
+           total +. Item.toPrice(item, ~date)
          );
     Ok(total /. 2.0);
   };
@@ -77,7 +77,7 @@ type sandwichTracker = {
 };
 
 /** Buy 1+ of every type of sandwich, get half off */
-let getSandwichHalfOff = (items: list(Item.t)) => {
+let getSandwichHalfOff = (items: list(Item.t), ~date: Js.Date.t) => {
   let tracker =
     items
     |> List.filter_map(
@@ -107,7 +107,7 @@ let getSandwichHalfOff = (items: list(Item.t)) => {
     let total =
       items
       |> ListLabels.fold_left(~init=0.0, ~f=(total, item) =>
-           total +. Item.toPrice(item)
+           total +. Item.toPrice(item, ~date)
          );
     Ok(total /. 2.0);
   | _ => Error(`MissingSandwichTypes)
@@ -118,16 +118,22 @@ type error =
   | ExpiredCode
   | InvalidCode;
 
-let getDiscountFunction = (code, date) => {
+// 'Ok' cases return a pair so the first element can be used by the test code
+let getDiscountPair = (code, date) => {
   let month = date |> Js.Date.getMonth;
   let dayOfMonth = date |> Js.Date.getDate;
 
   switch (code |> Js.String.toUpperCase) {
-  | "FREE" when month == 4.0 => Ok(getFreeBurgers)
-  | "HALF" when month == 4.0 && dayOfMonth == 28.0 => Ok(getHalfOff)
-  | "HALF" when month == 10.0 && dayOfMonth == 3.0 => Ok(getSandwichHalfOff)
+  | "FREE" when month == 4.0 => Ok((`FreeBurgers, getFreeBurgers))
+  | "HALF" when month == 4.0 && dayOfMonth == 28.0 =>
+    Ok((`HalfOff, getHalfOff(~date)))
+  | "HALF" when month == 10.0 && dayOfMonth == 3.0 =>
+    Ok((`SandwichHalfOff, getSandwichHalfOff(~date)))
   | "FREE"
   | "HALF" => Error(ExpiredCode)
   | _ => Error(InvalidCode)
   };
 };
+
+let getDiscountFunction = (code, date) =>
+  getDiscountPair(code, date) |> Result.map(snd);

@@ -10,17 +10,16 @@
  ; `melange.emit`), Dune will look into those dependencies and generate rules
  ; with JavaScript targets for the modules in those libraries as well.
  ; Caveat: the libraries need to be specified with `(modes melange)`.
- (libraries reason-react melange-fest)
+ (libraries reason-react melange-fest styled-ppx.emotion)
  ; The `preprocess` field lists preprocessors which transform code before it is
  ; compiled. melange.ppx allows to use Melange attributes [@mel. ...]
  ; (https://melange.re/v2.0.0/communicate-with-javascript/#attributes)
  ; reason-react-ppx allows to use JSX for ReasonReact components by using the
  ; [@JSX] attributes from Reason: https://reasonml.github.io/docs/en/jsx
  (preprocess
-  (pps melange.ppx reason-react-ppx))
+  (pps melange.ppx reason-react-ppx styled-ppx))
  ; module_systems lets you specify commonjs (the default) or es6
- (module_systems (es6 mjs))
- (runtime_deps order-item.module.css order.module.css))
+ (module_systems (es6 mjs)))
 
 (cram
  (deps

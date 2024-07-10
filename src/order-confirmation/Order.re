@@ -1,38 +1,61 @@
 type t = list(Item.t);
 
 module OrderItem = {
-  [@mel.module "./order-item.module.css"]
-  external css: Js.t({..}) = "default";
+  module Style = {
+    let item = [%cx {|border-top: 1px solid lightgray;|}];
+    let emoji = [%cx {|font-size: 2em;|}];
+    let price = [%cx {|text-align: right;|}];
+  };
 
   [@react.component]
-  let make = (~item: Item.t) =>
-    <tr className=css##item>
-      <td className=css##emoji> {item |> Item.toEmoji |> React.string} </td>
-      <td className=css##price> {item |> Item.toPrice |> Format.currency} </td>
+  let make = (~item: Item.t, ~date: Js.Date.t) =>
+    <tr className=Style.item>
+      <td className=Style.emoji> {item |> Item.toEmoji |> React.string} </td>
+      <td className=Style.price>
+        {item |> Item.toPrice(~date) |> RR.currency}
+      </td>
     </tr>;
 };
 
-[@mel.module "./order.module.css"] external css: Js.t({..}) = "default";
+module Style = {
+  let order = [%cx
+    {|
+    border-collapse: collapse;
+
+    td {
+      padding: 0.5em;
+    }
+    |}
+  ];
+
+  let total = [%cx
+    {|
+    border-top: 1px solid gray;
+    font-weight: bold;
+    text-align: right;
+    |}
+  ];
+};
 
 [@react.component]
-let make = (~items: t) => {
+let make = (~items: t, ~date: Js.Date.t) => {
   let total =
     items
     |> ListLabels.fold_left(~init=0., ~f=(acc, order) =>
-         acc +. Item.toPrice(order)
+         acc +. Item.toPrice(order, ~date)
        );
 
-  <table className=css##order>
+  <table className=Style.order>
     <tbody>
       {items
        |> List.mapi((index, item) =>
-            <OrderItem key={"item-" ++ string_of_int(index)} item />
+            <OrderItem key={"item-" ++ string_of_int(index)} item date />
           )
        |> Stdlib.Array.of_list
        |> React.array}
-      <tr className=css##total>
+      <tr className=Style.total>
         <td> {React.string("Total")} </td>
-        <td> {total |> Format.currency} </td>
+        <td> {total |> RR.currency} </td>
       </tr>
     </tbody>
   </table>;
