@@ -3,7 +3,7 @@ open Fest;
 test("Item.Sandwich.toEmoji", () =>
   expect
   |> deepEqual(
-       [|Portabello, Ham, Unicorn, Turducken|]
+       [|Portobello, Ham, Unicorn, Turducken|]
        |> Js.Array.map(~f=item => Item.Sandwich.toEmoji(item)),
        [|
          {js|🥪(🍄)|js},
@@ -23,7 +23,7 @@ test("Item.Sandwich.toPrice", () => {
 
   expect
   |> deepEqual(
-       [|Portabello, Ham, Unicorn, Turducken|] |> Js.Array.map(~f),
+       [|Portobello, Ham, Unicorn, Turducken|] |> Js.Array.map(~f),
        [|10., 10., 80., 20.|] /* expected prices */
      );
 });

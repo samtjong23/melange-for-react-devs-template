@@ -1,6 +1,6 @@
 module Sandwich = {
   type t =
-    | Portabello
+    | Portobello
     | Ham
     | Unicorn
     | Turducken;
@@ -9,7 +9,7 @@ module Sandwich = {
     let day = date |> Js.Date.getDay |> int_of_float;
 
     switch (t) {
-    | Portabello
+    | Portobello
     | Ham => 10.
     | Unicorn => 80.
     | Turducken when day == 2 => 10.
@@ -21,7 +21,7 @@ module Sandwich = {
     Printf.sprintf(
       {js|🥪(%s)|js},
       switch (t) {
-      | Portabello => {js|🍄|js}
+      | Portobello => {js|🍄|js}
       | Ham => {js|🐷|js}
       | Unicorn => {js|🦄|js}
       | Turducken => {js|🦃🦆🐓|js}

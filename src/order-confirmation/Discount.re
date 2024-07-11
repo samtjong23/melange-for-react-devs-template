@@ -70,7 +70,7 @@ let getHalfOff = (items: list(Item.t), ~date: Js.Date.t) => {
 };
 
 type sandwichTracker = {
-  portabello: bool,
+  portobello: bool,
   ham: bool,
   unicorn: bool,
   turducken: bool,
@@ -88,14 +88,14 @@ let getSandwichHalfOff = (items: list(Item.t), ~date: Js.Date.t) => {
        )
     |> ListLabels.fold_left(
          ~init={
-           portabello: false,
+           portobello: false,
            ham: false,
            unicorn: false,
            turducken: false,
          },
          ~f=(tracker, sandwich: Item.Sandwich.t) =>
          switch (sandwich) {
-         | Portabello => {...tracker, portabello: true}
+         | Portobello => {...tracker, portobello: true}
          | Ham => {...tracker, ham: true}
          | Unicorn => {...tracker, unicorn: true}
          | Turducken => {...tracker, turducken: true}
@@ -103,7 +103,7 @@ let getSandwichHalfOff = (items: list(Item.t), ~date: Js.Date.t) => {
        );
 
   switch (tracker) {
-  | {portabello: true, ham: true, unicorn: true, turducken: true} =>
+  | {portobello: true, ham: true, unicorn: true, turducken: true} =>
     let total =
       items
       |> ListLabels.fold_left(~init=0.0, ~f=(total, item) =>

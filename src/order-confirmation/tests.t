@@ -121,3 +121,103 @@ Discount tests
   # cancelled 0
   # skipped 0
   # todo 0
+
+Create tests
+  $ node ./output/src/order-confirmation/CreateTests.mjs | sed '/duration_ms/d'
+  TAP version 13
+  # Subtest: AddError actually adds a new error to error list
+  ok 1 - AddError actually adds a new error to error list
+    ---
+    ...
+  # Subtest: RemoveError actually removes error from error list
+  ok 2 - RemoveError actually removes error from error list
+    ---
+    ...
+  # Subtest: RemoveError removes the right error when there are multiple error in error list
+  ok 3 - RemoveError removes the right error when there are multiple error in error list
+    ---
+    ...
+  # Subtest: ClearErrors removes all errors from error list
+  ok 4 - ClearErrors removes all errors from error list
+    ---
+    ...
+  # Subtest: NotEmpty rule with none bool value should return error message
+  ok 5 - NotEmpty rule with none bool value should return error message
+    ---
+    ...
+  # Subtest: NotEmpty rule with non none bool value should not return error message
+  ok 6 - NotEmpty rule with non none bool value should not return error message
+    ---
+    ...
+  # Subtest: NotEmpty rule with none int value should return error message
+  ok 7 - NotEmpty rule with none int value should return error message
+    ---
+    ...
+  # Subtest: NotEmpty rule with non none int value should not return error message
+  ok 8 - NotEmpty rule with non none int value should not return error message
+    ---
+    ...
+  # Subtest: NotNegative rule with none int value should return NotEmpty error message
+  ok 9 - NotNegative rule with none int value should return NotEmpty error message
+    ---
+    ...
+  # Subtest: NotNegative rule with negative int value should return error message
+  ok 10 - NotNegative rule with negative int value should return error message
+    ---
+    ...
+  # Subtest: NotNegative rule with non negative int value should not return error message
+  ok 11 - NotNegative rule with non negative int value should not return error message
+    ---
+    ...
+  # Subtest: Single validation passes
+  ok 12 - Single validation passes
+    ---
+    ...
+  # Subtest: Single validation fails
+  ok 13 - Single validation fails
+    ---
+    ...
+  # Subtest: Multiple validations all pass
+  ok 14 - Multiple validations all pass
+    ---
+    ...
+  # Subtest: Multiple validations all fail
+  ok 15 - Multiple validations all fail
+    ---
+    ...
+  # Subtest: Multiple validations some pass some fail
+  ok 16 - Multiple validations some pass some fail
+    ---
+    ...
+  # Subtest: Empty list/no validations
+  ok 17 - Empty list/no validations
+    ---
+    ...
+  # Subtest: Field does not exist in an empty error list
+  ok 18 - Field does not exist in an empty error list
+    ---
+    ...
+  # Subtest: Field exists in a single element error list
+  ok 19 - Field exists in a single element error list
+    ---
+    ...
+  # Subtest: Field does not exist in a single element error list
+  ok 20 - Field does not exist in a single element error list
+    ---
+    ...
+  # Subtest: Field exists in a multiple elements error list
+  ok 21 - Field exists in a multiple elements error list
+    ---
+    ...
+  # Subtest: Field does not exist in a multiple elements error list
+  ok 22 - Field does not exist in a multiple elements error list
+    ---
+    ...
+  1..22
+  # tests 22
+  # suites 0
+  # pass 22
+  # fail 0
+  # cancelled 0
+  # skipped 0
+  # todo 0

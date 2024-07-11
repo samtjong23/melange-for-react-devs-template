@@ -83,7 +83,7 @@ module FreeBurger = {
            Sandwich(Ham),
            Burger({...burger, bacon: 2}), // 16.00
            Burger({...burger, onions: 6}), // 16.20
-           Sandwich(Portabello),
+           Sandwich(Portobello),
            Burger({...burger, tomatoes: true}) // 15.05
          ]),
          Ok(46.75),
@@ -99,7 +99,7 @@ module HalfOff = {
            ~date=june3,
            [
              Hotdog,
-             Sandwich(Portabello),
+             Sandwich(Portobello),
              Burger({
                lettuce: true,
                tomatoes: true,
@@ -120,7 +120,7 @@ module HalfOff = {
            ~date=june3,
            [
              Hotdog,
-             Sandwich(Portabello),
+             Sandwich(Portobello),
              Burger({
                lettuce: true,
                tomatoes: true,
@@ -144,7 +144,7 @@ module SandwichHalfOff = {
            [
              Sandwich(Unicorn),
              Hotdog,
-             Sandwich(Portabello),
+             Sandwich(Portobello),
              Sandwich(Ham),
            ],
          ),
@@ -160,7 +160,7 @@ module SandwichHalfOff = {
            [
              Sandwich(Turducken),
              Hotdog,
-             Sandwich(Portabello),
+             Sandwich(Portobello),
              Burger({
                lettuce: true,
                tomatoes: true,
