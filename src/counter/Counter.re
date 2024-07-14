@@ -3,17 +3,18 @@ let make = () => {
   let (counter, setCounter) = React.useState(() => 0);
 
   <div
-    style={ReactDOM.Style.make(
-      ~padding="1em",
-      ~display="flex",
-      ~gridGap="1em",
-      (),
-    )}>
-    <button onClick={_evt => setCounter(v => v - 1)}>
+    className="p-4 flex space-x-4 items-center justify-center bg-gray-100 rounded-md shadow-md">
+    <button
+      className="px-4 py-2 bg-red-500 text-white font-bold rounded-md hover:bg-red-600"
+      onClick={_evt => setCounter(v => v - 1)}>
       {React.string("-")}
     </button>
-    {counter |> Int.to_string |> React.string}
-    <button onClick={_evt => setCounter(v => v + 1)}>
+    <span className="text-xl font-medium">
+      {counter |> Int.to_string |> React.string}
+    </span>
+    <button
+      className="px-4 py-2 bg-green-500 text-white font-bold rounded-md hover:bg-green-600"
+      onClick={_evt => setCounter(v => v + 1)}>
       {React.string("+")}
     </button>
   </div>;

@@ -22,4 +22,9 @@ let optionIntToString = (optInt: option(int)): string =>
   };
 
 /** For getting value from an option, or returning a default value if None */
-let getWithDefault = Belt.Option.getWithDefault;
+let getWithDefault = (option, default) => {
+  switch (option) {
+  | Some(value) => value
+  | None => default
+  };
+};

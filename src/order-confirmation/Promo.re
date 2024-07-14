@@ -6,18 +6,62 @@ module Style = {
 
   let input = [%cx
     {|
-    font-family: monospace;
-    text-transform: uppercase;
+      font-family: monospace;
+      text-transform: uppercase;
+      text-align: center;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
     |}
   ];
 
-  let codeError = [%cx {|color: red|}];
+  let discountValue = [%cx
+    {|
+      color: red;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+      text-align: right;
+    |}
+  ];
 
-  let discountError = [%cx {|color: purple|}];
+  let codeError = [%cx
+    {|
+      color: red;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+    |}
+  ];
+
+  let discountError = [%cx
+    {|
+      color: purple;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+    |}
+  ];
+
+  let promoCodeContainer = [%cx
+    {|
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    |}
+  ];
+
+  let promoCodeLabel = [%cx
+    {|
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+    |}
+  ];
 };
 
 [@react.component]
-let make = (~items: list(Item.t), ~date: Js.Date.t) => {
+let make =
+    (
+      ~items: list(Item.t),
+      ~date: Js.Date.t,
+      ~setDiscountValue: float => unit,
+    ) => {
   let (code, setCode) = RR.useStateValue("");
   let (submittedCode, setSubmittedCode) = RR.useStateValue(None);
 
@@ -41,18 +85,29 @@ let make = (~items: list(Item.t), ~date: Js.Date.t) => {
       evt |> React.Event.Form.preventDefault;
       setSubmittedCode(Some(code));
     }}>
-    <input
-      className=Style.input
-      value=code
-      onChange={evt => {
-        evt |> RR.getValueFromEvent |> setCode;
-        setSubmittedCode(None);
-      }}
-    />
+    <div className=Style.promoCodeContainer>
+      <div className=Style.promoCodeLabel> {React.string("Promo code")} </div>
+      <input
+        className=Style.input
+        value=code
+        onChange={evt => {
+          evt |> RR.getValueFromEvent |> setCode;
+          setSubmittedCode(None);
+        }}
+      />
+    </div>
     {switch (discount) {
-     | `NoSubmittedCode => React.null
-     | `Discount(discount) => discount |> Float.neg |> RR.currency
+     | `NoSubmittedCode =>
+       setDiscountValue(0.);
+       React.null;
+     | `Discount(discount) =>
+       setDiscountValue(discount);
+
+       <div className=Style.discountValue>
+         {discount |> Float.neg |> RR.currency}
+       </div>;
      | `CodeError(error) =>
+       setDiscountValue(0.);
        <div className=Style.codeError>
          {let errorType =
             switch (error) {
@@ -60,8 +115,9 @@ let make = (~items: list(Item.t), ~date: Js.Date.t) => {
             | ExpiredCode => "Expired"
             };
           {j|$errorType promo code|j} |> RR.s}
-       </div>
+       </div>;
      | `DiscountError(code) =>
+       setDiscountValue(0.);
        let buyWhat =
          switch (code) {
          | `NeedOneBurger => "at least 1 more burger"

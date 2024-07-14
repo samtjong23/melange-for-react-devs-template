@@ -99,6 +99,142 @@ let getErrorMessage = (errors, fieldName): string =>
   | _ => ""
   };
 
+module Style = {
+  let form = [%cx
+    {|
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      background-color: #ffffff;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 0.5rem;
+      padding-bottom: 1rem;
+      border-radius: 0.375rem;
+      box-sizing: border-box;
+    |}
+  ];
+
+  let label = [%cx
+    {|
+      display: block;
+      font-size: 0.875rem;
+      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.25rem;
+      color: #1f2937;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    |}
+  ];
+
+  let select = [%cx
+    {|
+      display: block;
+      width: 100%;
+      border-radius: 0.375rem;
+      border: 1px solid #d1d5db;
+      padding: 0.5rem;
+      color: #1f2937;
+    |}
+  ];
+
+  let input = [%cx
+    {|
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      width: 80%;
+    |}
+  ];
+
+  let fieldset = [%cx
+    {|
+      padding: 0;
+      border: 0;
+      margin: 0;
+    |}
+  ];
+
+  let legend = [%cx
+    {|
+      display: block;
+      font-size: 0.875rem;
+      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.25rem;
+      color: #1f2937;
+      padding-top: 1.5rem;
+      padding-bottom: 0.5rem;
+    |}
+  ];
+
+  let radioContainer = [%cx
+    {|
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    |}
+  ];
+
+  let radioLabel = [%cx
+    {|
+      padding-left: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      color: #1f2937;
+      font-size: 0.875rem;
+    |}
+  ];
+
+  let errorText = [%cx
+    {|
+      color: #ef4444;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+      margin-top: 0.25rem;
+    |}
+  ];
+
+  let gridContainer = [%cx
+    {|
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0;
+    |}
+  ];
+
+  let colSpan3 = [%cx {|
+      grid-column: span 3;
+    |}];
+
+  let colSpan2 = [%cx {|
+      grid-column: span 2;
+    |}];
+
+  let submitButtonContainer = [%cx
+    {|
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      width: 100%;
+    |}
+  ];
+
+  let submitButton = [%cx
+    {|
+      padding: 0.5rem 1rem;
+      border: 1px solid #d1d5db;
+      background-color: #3b82f6;
+      color: #ffffff;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      &:hover {
+        background-color: #2563eb;
+      }
+    |}
+  ];
+};
+
 [@react.component]
 let make = (~items: Order.t, ~setItems: Order.t => unit) => {
   let (item, setItem) = RR.useStateValue(None);
@@ -188,7 +324,8 @@ let make = (~items: Order.t, ~setItems: Order.t => unit) => {
         fieldName => {dispatchErrorAction(RemoveError(fieldName))},
         errorsToRemove,
       );
-    | None => ()
+    | None =>
+      dispatchErrorAction(AddError("itemType", "Item type cannot be empty"))
     };
   };
 
@@ -243,7 +380,7 @@ let make = (~items: Order.t, ~setItems: Order.t => unit) => {
   };
 
   let handleIntFieldChange = (field, value) => {
-    let intValue = Belt.Int.fromString(value);
+    let intValue = int_of_string_opt(value);
 
     switch (item) {
     | Some(Burger(burgerRecord)) =>
@@ -261,12 +398,13 @@ let make = (~items: Order.t, ~setItems: Order.t => unit) => {
   };
 
   <div>
-    <form onSubmit=handleSubmit>
+    <form className=Style.form onSubmit=handleSubmit>
       <div>
         <div>
-          <label> {RR.s("Choose item type")} </label>
+          <label className=Style.label> {RR.s("Choose item type")} </label>
           <div>
             <select
+              className=Style.select
               value={
                 switch (item) {
                 | Some(Hotdog) => "hotdog"
@@ -292,9 +430,12 @@ let make = (~items: Order.t, ~setItems: Order.t => unit) => {
         {switch (item) {
          | Some(Sandwich(_)) =>
            <div>
-             <label> {RR.s("Choose sandwich type")} </label>
+             <label className=Style.label>
+               {RR.s("Choose sandwich type")}
+             </label>
              <div>
                <select
+                 className=Style.select
                  value={
                    switch (item) {
                    | Some(Sandwich(Some(Portobello))) => "portobello"
@@ -322,127 +463,135 @@ let make = (~items: Order.t, ~setItems: Order.t => unit) => {
                  </option>
                </select>
              </div>
-             <p> {React.string(getErrorMessage(errors, "sandwichType"))} </p>
+             <p className=Style.errorText>
+               {RR.s(getErrorMessage(errors, "sandwichType"))}
+             </p>
            </div>
          | Some(Burger({lettuce, tomatoes, onions, cheese, bacon})) =>
-           <div>
-             <div>
-               <fieldset>
-                 <legend> {RR.s("Lettuce")} </legend>
-                 <div>
+           <div className=Style.gridContainer>
+             <div className=Style.colSpan3>
+               <fieldset className=Style.fieldset>
+                 <legend className=Style.legend> {RR.s("Lettuce")} </legend>
+                 <div className=Style.radioContainer>
                    <div>
-                     <div>
-                       <input
-                         type_="radio"
-                         checked={lettuce == Some(true)}
-                         onChange={_ =>
-                           handleBoolFieldChange("lettuce", Some(true))
-                         }
-                       />
-                       {RR.s("Yes")}
-                     </div>
-                     <div>
-                       <input
-                         type_="radio"
-                         checked={lettuce == Some(false)}
-                         onChange={_ =>
-                           handleBoolFieldChange("lettuce", Some(false))
-                         }
-                       />
-                       {RR.s("No")}
-                     </div>
+                     <input
+                       type_="radio"
+                       checked={lettuce == Some(true)}
+                       onChange={_ =>
+                         handleBoolFieldChange("lettuce", Some(true))
+                       }
+                     />
+                     <span className=Style.radioLabel> {RR.s("Yes")} </span>
                    </div>
-                   <p>
-                     {React.string(getErrorMessage(errors, "lettuce"))}
-                   </p>
-                 </div>
-               </fieldset>
-               <fieldset>
-                 <legend> {RR.s("Tomatoes")} </legend>
-                 <div>
                    <div>
-                     <div>
-                       <input
-                         type_="radio"
-                         checked={tomatoes == Some(true)}
-                         onChange={_ =>
-                           handleBoolFieldChange("tomatoes", Some(true))
-                         }
-                       />
-                       {RR.s("Yes")}
-                     </div>
-                     <div>
-                       <input
-                         type_="radio"
-                         checked={tomatoes == Some(false)}
-                         onChange={_ =>
-                           handleBoolFieldChange("tomatoes", Some(false))
-                         }
-                       />
-                       {RR.s("No")}
-                     </div>
+                     <input
+                       type_="radio"
+                       checked={lettuce == Some(false)}
+                       onChange={_ =>
+                         handleBoolFieldChange("lettuce", Some(false))
+                       }
+                     />
+                     <span className=Style.radioLabel> {RR.s("No")} </span>
                    </div>
-                   <p>
-                     {React.string(getErrorMessage(errors, "tomatoes"))}
-                   </p>
                  </div>
+                 <p className=Style.errorText>
+                   {RR.s(getErrorMessage(errors, "lettuce"))}
+                 </p>
                </fieldset>
-               <div>
-                 <label> {RR.s("Onions")} </label>
-                 <div>
-                   <input
-                     type_="number"
-                     step=1.
-                     value={RR.optionIntToString(onions)}
-                     placeholder="Enter number of onions"
-                     onChange={evt => {
-                       evt
-                       |> RR.getValueFromEvent
-                       |> handleIntFieldChange("onions")
-                     }}
-                   />
+             </div>
+             <div className=Style.colSpan3>
+               <fieldset className=Style.fieldset>
+                 <legend className=Style.legend> {RR.s("Tomatoes")} </legend>
+                 <div className=Style.radioContainer>
+                   <div>
+                     <input
+                       type_="radio"
+                       checked={tomatoes == Some(true)}
+                       onChange={_ =>
+                         handleBoolFieldChange("tomatoes", Some(true))
+                       }
+                     />
+                     <span className=Style.radioLabel> {RR.s("Yes")} </span>
+                   </div>
+                   <div>
+                     <input
+                       type_="radio"
+                       checked={tomatoes == Some(false)}
+                       onChange={_ =>
+                         handleBoolFieldChange("tomatoes", Some(false))
+                       }
+                     />
+                     <span className=Style.radioLabel> {RR.s("No")} </span>
+                   </div>
                  </div>
-                 <p> {React.string(getErrorMessage(errors, "onions"))} </p>
-               </div>
-               <div>
-                 <label> {RR.s("Cheese")} </label>
-                 <div>
-                   <input
-                     type_="number"
-                     step=1.
-                     value={RR.optionIntToString(cheese)}
-                     placeholder="Enter number of cheese slices"
-                     onChange={evt => {
-                       evt
-                       |> RR.getValueFromEvent
-                       |> handleIntFieldChange("cheese")
-                     }}
-                   />
-                 </div>
-                 <p> {React.string(getErrorMessage(errors, "cheese"))} </p>
-               </div>
-               <div>
-                 <label> {RR.s("Bacon")} </label>
-                 <div>
-                   <input
-                     type_="number"
-                     step=1.
-                     value={RR.optionIntToString(bacon)}
-                     placeholder="Enter number of bacon strips"
-                     onChange={evt => {
-                       evt
-                       |> RR.getValueFromEvent
-                       |> handleIntFieldChange("bacon")
-                     }}
-                   />
-                 </div>
-                 <p> {React.string(getErrorMessage(errors, "bacon"))} </p>
-               </div>
+                 <p className=Style.errorText>
+                   {RR.s(getErrorMessage(errors, "tomatoes"))}
+                 </p>
+               </fieldset>
+             </div>
+             <div className=Style.colSpan2>
+               <label className=Style.label> {RR.s("Onions")} </label>
+               <input
+                 className=Style.input
+                 type_="number"
+                 step=1.
+                 value={RR.optionIntToString(onions)}
+                 placeholder="Enter number of onions"
+                 onChange={evt => {
+                   evt
+                   |> RR.getValueFromEvent
+                   |> handleIntFieldChange("onions")
+                 }}
+               />
+               <p className=Style.errorText>
+                 {RR.s(getErrorMessage(errors, "onions"))}
+               </p>
+             </div>
+             <div className=Style.colSpan2>
+               <label className=Style.label> {RR.s("Cheese")} </label>
+               <input
+                 className=Style.input
+                 type_="number"
+                 step=1.
+                 value={RR.optionIntToString(cheese)}
+                 placeholder="Enter number of cheese slices"
+                 onChange={evt => {
+                   evt
+                   |> RR.getValueFromEvent
+                   |> handleIntFieldChange("cheese")
+                 }}
+               />
+               <p className=Style.errorText>
+                 {RR.s(getErrorMessage(errors, "cheese"))}
+               </p>
+             </div>
+             <div className=Style.colSpan2>
+               <label className=Style.label> {RR.s("Bacon")} </label>
+               <input
+                 className=Style.input
+                 type_="number"
+                 step=1.
+                 value={RR.optionIntToString(bacon)}
+                 placeholder="Enter number of bacon strips"
+                 onChange={evt => {
+                   evt
+                   |> RR.getValueFromEvent
+                   |> handleIntFieldChange("bacon")
+                 }}
+               />
+               <p className=Style.errorText>
+                 {RR.s(getErrorMessage(errors, "bacon"))}
+               </p>
              </div>
            </div>
-         | _ => React.null
+         | _ =>
+           <p className=Style.errorText>
+             {RR.s(getErrorMessage(errors, "itemType"))}
+           </p>
          }}
-        <div> <button> {RR.s("Add item")} </button> </div>
+        <div className=Style.submitButtonContainer>
+          <button className=Style.submitButton> {RR.s("Add")} </button>
+        </div>
       </div>
     </form>
   </div>;

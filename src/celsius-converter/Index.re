@@ -1,8 +1,11 @@
 module App = {
   [@react.component]
   let make = () =>
-    <div>
-      <h1> {React.string("Celsius Converter")} </h1>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center bg-gray-200 p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
+        {React.string("Celsius Converter")}
+      </h1>
       <CelsiusConverter />
     </div>;
 };

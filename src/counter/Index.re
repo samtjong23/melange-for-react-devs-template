@@ -1,7 +1,13 @@
 module App = {
   [@react.component]
   let make = () =>
-    <div> <h1> {React.string("Counter")} </h1> <Counter /> </div>;
+    <div
+      className="min-h-screen flex flex-col items-center justify-center bg-gray-200 p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
+        {React.string("Counter")}
+      </h1>
+      <Counter />
+    </div>;
 };
 
 let node = ReactDOM.querySelector("#root");

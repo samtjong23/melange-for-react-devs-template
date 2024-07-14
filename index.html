@@ -2,20 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="/tailwind.css" />
     <title>Melange for React Developers</title>
   </head>
-  <body>
-    <h1>Melange for React Developers</h1>
-    <ul>
-      <li>
-        <a href="src/counter/index.html">Counter</a>
-      </li>
-      <li>
-        <a href="src/celsius-converter/index.html">Celsius Converter</a>
-      </li>
-      <li>
-        <a href="src/order-confirmation/">Order Confirmation</a>
-      </li>
-    </ul>
+  <body class="bg-gray-200 min-h-screen flex items-center justify-center p-8">
+    <div class="w-full max-w-3xl bg-gray-100 rounded-lg shadow-lg p-8">
+      <h1 class="text-4xl font-bold mb-8 text-center text-orange-500">Melange for React Developers</h1>
+      <ul class="list-disc list-inside space-y-4">
+        <li>
+          <a href="src/counter/index.html" class="text-blue-600 hover:underline text-lg">Counter</a>
+        </li>
+        <li>
+          <a href="src/celsius-converter/index.html" class="text-blue-600 hover:underline text-lg">Celsius Converter</a>
+        </li>
+        <li>
+          <a href="src/order-confirmation/" class="text-blue-600 hover:underline text-lg">Order Confirmation</a>
+      </ul>
+    </div>
   </body>
 </html>
